@@ -8,6 +8,8 @@ const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const nav = document.querySelector('.nav');
+const h1 = document.querySelector('h1');
+const header = document.querySelector('.header')
 
 const openModal = function () {
   modal.classList.remove('hidden');
@@ -37,31 +39,7 @@ const botonScrollTo = document.querySelector('.btn--scroll-to');
 //seccion a la que quiero bajar
 const section1 = document.querySelector('.section__header');
 
-
-
-
 botonScrollTo.addEventListener('click',function(e){
-  //   console.clear();
-  //   const s1coords = section1.getBoundingClientRect();
-  //   console.log(s1coords);
-  //   console.log("Coordenadas del boton pulsado", e.target.getBoundingClientRect());
-  //   console.log("Current scroll (x,y)", window.pageXOffset, window.pageYOffset);
-
-  //   //scrolling
-  //   // window.scrollTo(
-  //   //   s1coords.left+window.pageXOffset,
-  //   //   s1coords.top +
-  //   // window.pageYOffset
-  //   // );
-
-
-  //   //Para
-  //   window.scrollTo({
-  //     left: s1coords.left+window.pageXOffset,
-  //     top: s1coords.top + window.pageYOffset,
-  //     behavior : 'smooth'
-  //   })
-
   /*Manera mas moderna para navegadores modernos, 
   lo comentado arriba tambien sirve, 
   pero es mas rudimentario*/
@@ -144,10 +122,6 @@ console.clear();
 
 
 /****************  Resaltar algo cuando paso por encima y hacer borroso lo demas */
-
-
-
-
 // nav.addEventListener('mouseover',function(e){
 //   if(e.target.classList.contains('nav__link')){
 //     const clicked = e.target;
@@ -198,3 +172,80 @@ nav.addEventListener('mouseover',function(e){
 nav.addEventListener('mouseout',function(e){
   handleHover(e,1);
 });
+
+const h1coords = h1.getBoundingClientRect();
+
+//Intersection observer API
+//Nos deja observar cambios cada vez que un elemento aparece en el viewport
+
+// const observerCallback = function(entries,observer){
+//   entries.forEach(entry => {
+//     console.log(entry);
+//   })
+// };
+
+
+// const obsOptions = {
+//   root: null,
+//   threshold: [0,0.2] //cantidad de la seccion en la interseccion
+// };
+
+// const observer = new IntersectionObserver(observerCallback,obsOptions);
+
+// observer.observe(section1);
+const navHeight = nav.getBoundingClientRect().height;
+console.log(navHeight);
+
+const stickyNav = function(entries){
+  const [entry] = entries;
+  //console.log(entry);
+  if(!entry.isIntersecting)
+  nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+
+;
+
+const options = {
+  root: null, //null es para el viewport del navegador
+  threshold: 0, //cuando no se vea nada
+  rootMargin:  `-${navHeight}px`
+};
+const headerObserver = new IntersectionObserver(stickyNav,options);
+
+headerObserver.observe(header);
+
+
+//revelar secciones a medida que bajamos 
+//el proposito de esto es que a medida que bajemos, quitemos de cada seccion 
+//el section--hidden que tiene
+//usaremos intersection observer API
+
+
+const allSections = document.querySelectorAll('.section');
+
+const revelarSeccion = function(entries, observer){
+  const [entry] = entries;
+  console.log(entry);
+
+  if(!entry.isIntersecting) return;
+  entry.target.classList.remove('section--hidden')
+  observer.unobserve(entry.target);
+}
+
+const sectionObserver = new IntersectionObserver(revelarSeccion,{
+  root: null,
+  threshold: 0.15
+})
+
+allSections.forEach(function(section){
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden'); //añadimos mediante javascript un section hidden a todas las sections
+})
+
+
+/**********************Slider ********************/
+
+// const slides = document.querySelectorAll('slide')
+
+// slides.forEach((s,i) => s.style.transform = `translateX(${100*i}%))`);
