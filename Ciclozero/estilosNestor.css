@@ -1,0 +1,8 @@
+/*anadido*/
+.elementor-top-section.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.3);
+  }
